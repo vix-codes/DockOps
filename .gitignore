@@ -1,0 +1,38 @@
+# Environment files
+.env
+.env.local
+*.env.local
+
+# Build outputs
+dockops-frontend/dist/
+dockops-backend/target/
+
+# Node
+node_modules/
+dockops-frontend/node_modules/
+
+# Java
+*.class
+*.jar
+*.war
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+nginx/ssl/
+
+# Maven
+dockops-backend/.mvn/
+dockops-backend/mvnw
+dockops-backend/mvnw.cmd

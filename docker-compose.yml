@@ -1,0 +1,77 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dockops-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-dockops}
+      POSTGRES_USER: ${DB_USERNAME:-dockops}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-dockops_secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dockops-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-dockops} -d ${DB_NAME:-dockops}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./dockops-backend
+      dockerfile: Dockerfile
+    container_name: dockops-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-dockops}
+      DB_USERNAME: ${DB_USERNAME:-dockops}
+      DB_PASSWORD: ${DB_PASSWORD:-dockops_secret}
+      JWT_SECRET: ${JWT_SECRET:-dockops-super-secret-jwt-key-must-be-at-least-256-bits-long}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:-dockops-webhook-secret}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      PORT: 8080
+    ports:
+      - "8080:8080"
+    networks:
+      - dockops-network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  nginx:
+    image: nginx:alpine
+    container_name: dockops-nginx
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    networks:
+      - dockops-network
+
+networks:
+  dockops-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  nginx_logs:
