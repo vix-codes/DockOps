@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Trash2, Download, RefreshCw, Plus } from 'lucide-react';
+import { Trash2, RefreshCw, Plus } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
