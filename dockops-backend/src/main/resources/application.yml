@@ -37,6 +37,8 @@ spring:
 
 server:
   port: ${PORT:8080}
+  servlet:
+    context-path: /dockops
   error:
     include-message: always
     include-binding-errors: always
