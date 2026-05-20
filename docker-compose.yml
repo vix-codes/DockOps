@@ -38,10 +38,14 @@ services:
       WEBHOOK_SECRET: ${WEBHOOK_SECRET:-dockops-webhook-secret}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       PORT: 8080
+      EVALFORGE_API_URL: ${EVALFORGE_API_URL:-}
+      EVALFORGE_WEBHOOK_SECRET: ${EVALFORGE_WEBHOOK_SECRET:-}
+      EVALFORGE_ENABLED: ${EVALFORGE_ENABLED:-false}
     ports:
       - "8080:8080"
     networks:
       - dockops-network
+      - services-net
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     mem_limit: 512m
