@@ -140,7 +140,7 @@ public class DeploymentService {
             addLog(deployment, DeploymentLog.LogLevel.INFO, "Building Docker images...", "docker");
             broadcaster.broadcastLog(deployment.getId(), "INFO", "Building Docker images...");
 
-            String buildCmd = String.format("cd %s && docker compose -f %s build --no-cache 2>&1",
+            String buildCmd = String.format("cd %s && docker compose -f %s build 2>&1",
                     workDir, composePath);
             SshCommandResult buildResult = sshConnectionManager.execute(node, buildCmd);
 
@@ -148,8 +148,8 @@ public class DeploymentService {
             broadcaster.broadcastLog(deployment.getId(), "INFO", buildResult.output());
 
             if (!buildResult.success()) {
-                failureLog.append("Docker build failed:\n").append(buildResult.stderr());
-                throw new RuntimeException("Docker build failed: " + buildResult.stderr());
+                failureLog.append("Docker build failed:\n").append(buildResult.output());
+                throw new RuntimeException("Docker build failed: " + buildResult.output());
             }
 
             addLog(deployment, DeploymentLog.LogLevel.INFO, "Starting containers...", "docker");
@@ -163,8 +163,8 @@ public class DeploymentService {
             broadcaster.broadcastLog(deployment.getId(), "INFO", upResult.output());
 
             if (!upResult.success()) {
-                failureLog.append("Docker compose up failed:\n").append(upResult.stderr());
-                throw new RuntimeException("Docker compose up failed: " + upResult.stderr());
+                failureLog.append("Docker compose up failed:\n").append(upResult.output());
+                throw new RuntimeException("Docker compose up failed: " + upResult.output());
             }
 
             // Success

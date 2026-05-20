@@ -62,7 +62,7 @@ app:
 
   gemini:
     api-key: ${GEMINI_API_KEY:}
-    api-url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    api-url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
 
   webhook:
     secret: ${WEBHOOK_SECRET:dockops-webhook-secret}
