@@ -53,7 +53,7 @@ public class SshConnectionManager {
             log.debug("SSH [{}] exit={} cmd={}", node.getHost(), exitCode, command);
             return new SshCommandResult(exitCode, stdoutStr, stderrStr, exitCode == 0);
 
-        } catch (JSchException | IOException | InterruptedException e) {
+        } catch (JSchException | InterruptedException e) {
             log.error("SSH execution failed on {}: {}", node.getHost(), e.getMessage());
             invalidateSession(node.getId());
             throw DockOpsException.sshError("Command execution failed: " + e.getMessage());
