@@ -62,11 +62,21 @@ def summarize_project(p: dict) -> dict:
     }
 
 
+def _fmt_ports(ports) -> str:
+    if not ports:
+        return ""
+    if isinstance(ports, str):
+        return ports
+    if isinstance(ports, list):
+        return ", ".join(str(p) for p in ports)
+    return str(ports)
+
+
 def summarize_container(c: dict) -> dict:
     return {
         "id": c.get("containerId", c.get("id", "?"))[:12],
         "name": c.get("name", "-").lstrip("/"),
         "image": c.get("image", "-"),
         "status": status_color(c.get("status", "?")),
-        "ports": ", ".join(c.get("ports", [])) or "-",
+        "ports": _fmt_ports(c.get("ports")) or "-",
     }
