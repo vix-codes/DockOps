@@ -67,6 +67,14 @@ app:
   webhook:
     secret: ${WEBHOOK_SECRET:dockops-webhook-secret}
 
+  evalforge:
+    api-url: ${EVALFORGE_API_URL:}
+    webhook-secret: ${EVALFORGE_WEBHOOK_SECRET:}
+    enabled: ${EVALFORGE_ENABLED:false}
+
+  resolvehub:
+    health-url: ${RESOLVEHUB_HEALTH_URL:http://resolvehub-backend:5000/health}
+
 management:
   endpoints:
     web:

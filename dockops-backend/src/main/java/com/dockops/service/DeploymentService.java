@@ -1,5 +1,6 @@
 package com.dockops.service;
 
+import com.dockops.ai.EvalForgeNotifier;
 import com.dockops.ai.GeminiService;
 import com.dockops.dto.deployment.DeploymentRequest;
 import com.dockops.dto.deployment.DeploymentResponse;
@@ -36,6 +37,7 @@ public class DeploymentService {
     private final SshConnectionManager sshConnectionManager;
     private final DeploymentEventBroadcaster broadcaster;
     private final GeminiService geminiService;
+    private final EvalForgeNotifier evalForgeNotifier;
 
     @Transactional(readOnly = true)
     public Page<DeploymentResponse> getDeployments(UUID projectId, int page, int size) {
@@ -178,6 +180,19 @@ public class DeploymentService {
             addLog(deployment, DeploymentLog.LogLevel.INFO,
                     "Deployment completed successfully in " + deployment.getDurationMs() + "ms", "system");
             broadcaster.broadcastLog(deployment.getId(), "INFO", "Deployment completed successfully!");
+
+            // Notify EvalForge to run validation after successful deployments
+            try {
+                evalForgeNotifier.notifyDeployment(
+                        deployment.getId(),
+                        project.getName(),
+                        deployment.getCommitHash(),
+                        deployment.getBranch(),
+                        "SUCCESS"
+                );
+            } catch (Exception evalEx) {
+                log.warn("EvalForge notification failed (non-fatal): {}", evalEx.getMessage());
+            }
 
         } catch (Exception e) {
             log.error("Deployment failed for project {}: {}", project.getName(), e.getMessage());
