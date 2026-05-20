@@ -8,9 +8,8 @@ import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 
-// VITE_API_URL is e.g. "https://143.198.160.235/dockops" — strip /dockops context and convert to ws
-const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
-const WS_BASE = API_URL.replace(/^http/, 'ws').replace(/\/dockops$/, '');
+// VITE_WS_URL is e.g. "wss://143.198.160.235" — direct VPS WS endpoint (bypasses Vercel proxy)
+const WS_BASE = (import.meta.env.VITE_WS_URL || '').replace(/\/$/, '').replace(/\/dockops\/ws$/, '');
 
 export function TerminalPage() {
   const [nodes, setNodes] = useState<ServerNode[]>([]);
