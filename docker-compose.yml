@@ -67,11 +67,14 @@ services:
       - nginx_logs:/var/log/nginx
     networks:
       - dockops-network
+      - services-net
     mem_limit: 64m
 
 networks:
   dockops-network:
     driver: bridge
+  services-net:
+    external: true
 
 volumes:
   postgres_data:
