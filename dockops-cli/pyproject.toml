@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "dockops-cli"
+version = "1.0.0"
+description = "CLI for the DockOps infrastructure platform"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1",
+    "requests>=2.31",
+]
+
+[project.scripts]
+dockops = "dockops_cli.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dockops_cli*"]
