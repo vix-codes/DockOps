@@ -7,17 +7,49 @@ import {
   FolderGit2,
   LogOut,
   Activity,
+  HardDrive,
+  Network,
+  Layers,
+  FolderOpen,
+  TerminalSquare,
+  AppWindow,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 
-const navItems = [
-  { icon: LayoutDashboard, label: 'Overview', to: '/' },
-  { icon: Server, label: 'Nodes', to: '/nodes' },
-  { icon: Container, label: 'Containers', to: '/containers' },
-  { icon: FolderGit2, label: 'Projects', to: '/projects' },
-  { icon: Rocket, label: 'Deployments', to: '/deployments' },
-  { icon: Activity, label: 'Metrics', to: '/metrics' },
+const navGroups = [
+  {
+    label: 'Overview',
+    items: [
+      { icon: LayoutDashboard, label: 'Dashboard', to: '/' },
+      { icon: Activity, label: 'Metrics', to: '/metrics' },
+      { icon: AppWindow, label: 'App Registry', to: '/apps' },
+    ],
+  },
+  {
+    label: 'Servers',
+    items: [
+      { icon: Server, label: 'Nodes', to: '/nodes' },
+      { icon: TerminalSquare, label: 'Terminal', to: '/terminal' },
+      { icon: FolderOpen, label: 'File Browser', to: '/files' },
+    ],
+  },
+  {
+    label: 'Docker',
+    items: [
+      { icon: Container, label: 'Containers', to: '/containers' },
+      { icon: Layers, label: 'Images', to: '/images' },
+      { icon: HardDrive, label: 'Volumes', to: '/volumes' },
+      { icon: Network, label: 'Networks', to: '/networks' },
+    ],
+  },
+  {
+    label: 'Deployments',
+    items: [
+      { icon: FolderGit2, label: 'Projects', to: '/projects' },
+      { icon: Rocket, label: 'Deployments', to: '/deployments' },
+    ],
+  },
 ];
 
 export function Sidebar() {
@@ -43,24 +75,33 @@ export function Sidebar() {
         </div>
       </div>
 
-      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
-        {navItems.map(({ icon: Icon, label, to }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === '/'}
-            className={({ isActive }) =>
-              cn(
-                'flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors',
-                isActive
-                  ? 'bg-[hsl(var(--primary))]/10 text-[hsl(var(--primary))] font-medium'
-                  : 'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--foreground))]'
-              )
-            }
-          >
-            <Icon className="w-4 h-4 flex-shrink-0" />
-            {label}
-          </NavLink>
+      <nav className="flex-1 p-3 space-y-4 overflow-y-auto">
+        {navGroups.map((group) => (
+          <div key={group.label}>
+            <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))]/60">
+              {group.label}
+            </p>
+            <div className="space-y-0.5">
+              {group.items.map(({ icon: Icon, label, to }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  end={to === '/'}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors',
+                      isActive
+                        ? 'bg-[hsl(var(--primary))]/10 text-[hsl(var(--primary))] font-medium'
+                        : 'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--foreground))]'
+                    )
+                  }
+                >
+                  <Icon className="w-4 h-4 flex-shrink-0" />
+                  {label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
         ))}
       </nav>
 

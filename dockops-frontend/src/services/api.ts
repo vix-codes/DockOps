@@ -1,6 +1,9 @@
 import axios from 'axios';
 import type { AxiosInstance, AxiosError } from 'axios';
-import type { AuthResponse, ServerNode, Container, Project, Deployment, PageResponse } from '@/types';
+import type {
+  AuthResponse, ServerNode, Container, Project, Deployment, PageResponse,
+  FileEntry, DockerImage, DockerVolume, DockerNetwork, ContainerStats, ManagedApp,
+} from '@/types';
 
 const BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
@@ -93,6 +96,71 @@ export const deploymentsApi = {
   trigger: (projectId: string, branch?: string) =>
     api.post<Deployment>('api/deployments', { projectId, branch }),
   rollback: (id: string) => api.post<Deployment>(`api/deployments/${id}/rollback`),
+};
+
+// Filesystem
+export const fsApi = {
+  list: (nodeId: string, path = '/') =>
+    api.get<FileEntry[]>(`api/fs/${nodeId}/list`, { params: { path } }),
+  read: (nodeId: string, path: string) =>
+    api.get<{ content: string; path: string }>(`api/fs/${nodeId}/read`, { params: { path } }),
+  write: (nodeId: string, path: string, content: string) =>
+    api.put<void>(`api/fs/${nodeId}/write`, { content }, { params: { path } }),
+  mkdir: (nodeId: string, path: string) =>
+    api.post<void>(`api/fs/${nodeId}/mkdir`, { path }),
+  touch: (nodeId: string, path: string) =>
+    api.post<void>(`api/fs/${nodeId}/touch`, { path }),
+  rename: (nodeId: string, oldPath: string, newPath: string) =>
+    api.patch<void>(`api/fs/${nodeId}/rename`, { oldPath, newPath }),
+  delete: (nodeId: string, path: string, recursive = false) =>
+    api.delete<void>(`api/fs/${nodeId}/delete`, { params: { path, recursive } }),
+  download: async (nodeId: string, path: string) => {
+    const res = await api.get(`api/fs/${nodeId}/download`, {
+      params: { path },
+      responseType: 'blob',
+    });
+    const url = URL.createObjectURL(res.data as Blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = path.split('/').pop() || 'file';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  },
+  upload: (nodeId: string, directory: string, file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return api.post<void>(`api/fs/${nodeId}/upload`, form, {
+      params: { directory },
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+};
+
+// Docker extended
+export const dockerApi = {
+  images: (nodeId: string) => api.get<DockerImage[]>(`api/nodes/${nodeId}/docker/images`),
+  removeImage: (nodeId: string, imageId: string) =>
+    api.delete<void>(`api/nodes/${nodeId}/docker/images/${imageId}`),
+  pullImage: (nodeId: string, image: string) =>
+    api.post<void>(`api/nodes/${nodeId}/docker/images/pull`, { image }),
+  volumes: (nodeId: string) => api.get<DockerVolume[]>(`api/nodes/${nodeId}/docker/volumes`),
+  removeVolume: (nodeId: string, volumeName: string) =>
+    api.delete<void>(`api/nodes/${nodeId}/docker/volumes/${volumeName}`),
+  networks: (nodeId: string) => api.get<DockerNetwork[]>(`api/nodes/${nodeId}/docker/networks`),
+  stats: (nodeId: string) => api.get<ContainerStats[]>(`api/nodes/${nodeId}/docker/stats`),
+  prune: (nodeId: string, volumes = false) =>
+    api.post<{ output: string }>(`api/nodes/${nodeId}/docker/prune`, null, { params: { volumes } }),
+};
+
+// Application Registry
+export const appsApi = {
+  list: () => api.get<ManagedApp[]>('api/apps'),
+  get: (id: string) => api.get<ManagedApp>(`api/apps/${id}`),
+  create: (data: object) => api.post<ManagedApp>('api/apps', data),
+  update: (id: string, data: object) => api.put<ManagedApp>(`api/apps/${id}`, data),
+  delete: (id: string) => api.delete<void>(`api/apps/${id}`),
 };
 
 export default api;

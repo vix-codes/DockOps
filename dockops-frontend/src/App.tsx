@@ -9,6 +9,12 @@ import { ContainersPage } from '@/pages/ContainersPage';
 import { ProjectsPage } from '@/pages/ProjectsPage';
 import { DeploymentsPage } from '@/pages/DeploymentsPage';
 import { MetricsPage } from '@/pages/MetricsPage';
+import { FileBrowserPage } from '@/pages/FileBrowserPage';
+import { TerminalPage } from '@/pages/TerminalPage';
+import { ImagesPage } from '@/pages/ImagesPage';
+import { VolumesPage } from '@/pages/VolumesPage';
+import { NetworksPage } from '@/pages/NetworksPage';
+import { AppRegistryPage } from '@/pages/AppRegistryPage';
 
 export default function App() {
   return (
@@ -24,6 +30,12 @@ export default function App() {
               <Route path="/projects" element={<ProjectsPage />} />
               <Route path="/deployments" element={<DeploymentsPage />} />
               <Route path="/metrics" element={<MetricsPage />} />
+              <Route path="/files" element={<FileBrowserPage />} />
+              <Route path="/terminal" element={<TerminalPage />} />
+              <Route path="/images" element={<ImagesPage />} />
+              <Route path="/volumes" element={<VolumesPage />} />
+              <Route path="/networks" element={<NetworksPage />} />
+              <Route path="/apps" element={<AppRegistryPage />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

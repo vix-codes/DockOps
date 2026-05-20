@@ -102,6 +102,10 @@ public class SshConnectionManager {
         }
     }
 
+    public Session getOrCreateSessionPublic(ServerNode node) throws JSchException {
+        return getOrCreateSession(node);
+    }
+
     private Session getOrCreateSession(ServerNode node) throws JSchException {
         Session existing = sessionPool.get(node.getId());
         if (existing != null && existing.isConnected()) {

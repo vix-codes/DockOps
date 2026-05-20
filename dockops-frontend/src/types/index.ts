@@ -114,3 +114,84 @@ export interface ApiError {
 
 export type NodeStatus = ServerNode['status'];
 export type DeploymentStatus = Deployment['status'];
+
+// Filesystem
+export interface FileEntry {
+  name: string;
+  path: string;
+  type: 'file' | 'directory' | 'symlink';
+  size: number;
+  permissions: string;
+  lastModifiedEpoch: number;
+  linkTarget?: string;
+}
+
+// Docker extended
+export interface DockerImage {
+  id: string;
+  shortId: string;
+  repository: string;
+  tag: string;
+  size: number;
+  created: string;
+}
+
+export interface DockerVolume {
+  name: string;
+  driver: string;
+  mountpoint: string;
+  created: string;
+  scope: string;
+}
+
+export interface DockerNetwork {
+  id: string;
+  shortId: string;
+  name: string;
+  driver: string;
+  scope: string;
+  subnet: string;
+  gateway: string;
+  internal: boolean;
+  containers: number;
+}
+
+export interface ContainerStats {
+  containerId: string;
+  name: string;
+  cpuPercent: string;
+  memUsage: string;
+  memPercent: string;
+  netIO: string;
+  blockIO: string;
+  pids: number;
+}
+
+// Application Registry
+export interface ManagedApp {
+  id: string;
+  name: string;
+  displayName: string;
+  description?: string;
+  serverNodeId?: string;
+  serverNodeName?: string;
+  containerNames: string[];
+  composeFilePath?: string;
+  composeWorkDir?: string;
+  gitRepoUrl?: string;
+  gitBranch?: string;
+  tags: string[];
+  enabled: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  // Runtime state
+  healthStatus: 'healthy' | 'degraded' | 'down' | 'unknown';
+  runningContainers: number;
+  totalContainers: number;
+  cpuPercent?: number;
+  memoryPercent?: number;
+  containers?: Container[];
+  lastDeploymentStatus?: string;
+  lastDeployedAt?: string;
+  lastDeployedCommit?: string;
+}
